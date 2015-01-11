@@ -1,8 +1,8 @@
 /*This source code copyrighted by Lazy Foo' Productions (2004-2014)
 and may not be redistributed without written permission.*/
 
-//cd "Documents/CS179.14/SDL Tutorials"
-//g++ 29_circular_collision_detection.cpp -lSDL2 -lSDL2_image -lSDL2_ttf -o 29
+//cd Documents/CS179.14/Homeworks/HW05
+//g++ bouncingBall.cpp -lSDL2 -lSDL2_image -lSDL2_ttf -o Bouncing Ball
 
 
 //Using SDL, SDL_image, standard IO, vectors, and strings
@@ -18,8 +18,8 @@ and may not be redistributed without written permission.*/
 
 using namespace std; 
 //Screen dimension constants
-const int SCREEN_WIDTH = 640;
-const int SCREEN_HEIGHT = 480;
+const int SCREEN_WIDTH = 250;
+const int SCREEN_HEIGHT = 200;
 
 //A circle stucture
 struct Circle{
@@ -326,7 +326,7 @@ Ball::Ball(int x, int y, int velX, int velY){
 	//Move collider relative to the circle
 	shiftColliders();
 }
-
+//moves and checks if the object circle collides with the argument circle
 void Ball::move(Circle& circle){
 
     //Move the ball left or right
@@ -546,9 +546,9 @@ void close(){
 }
 
 void loadBalls(int n){
-	for(int i = 1; i < n+1; i++){
-		Ball ball(30*i, 10*i, rand()%5, rand()%5);
-		gBalls.push_back(ball);
+	for(int i = 0; i < n; i++){
+		Ball ball_moving(10+i, 10*i, rand()%5, rand()%5);
+		gBalls.push_back(ball_moving);
 	}
 }
 
@@ -606,15 +606,12 @@ int main( int argc, char* args[] ){
 			fpsTimer.start();
 
 			//Count of balls in screen
-			int nBalls = 5;
+			int nBalls = 4;
 
 			//Set text color as black
 			SDL_Color textColor = {0, 0, 0, 255};
 
-			//The ball that will be moving around on the screen
-			Ball ball(sin(fpsTimer.getTicks())+10, 0, 2,5);
-
-			//loadBalls in gBalls texture
+			//loadBalls in vector gBalls
 			loadBalls(nBalls);
 
 			//While application is running
@@ -631,6 +628,9 @@ int main( int argc, char* args[] ){
 				SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
 				SDL_RenderClear(gRenderer);
 
+				//The ball in the center of the screen to which all other ball collides with
+				Ball ball(SCREEN_WIDTH/2, SCREEN_HEIGHT/2, 0, 0);
+				ball.render();
 				
 				//Calculate and correct fps
 				float avgFPS = countedFrames/(fpsTimer.getTicks()/1000.f);
@@ -648,7 +648,9 @@ int main( int argc, char* args[] ){
 				}
 				gFPSTextTexture.render((SCREEN_WIDTH-gFPSTextTexture.getWidth())/2, 0);
 
+				//Move and render the balls inside the vector gBalls
 				for(int i = 0; i < nBalls; i++){
+					//bug: Needs to include all the balls inside the gBalls for the move method
 					gBalls.at(i).move(ball.getCollider());
 					gBalls.at(i).render();
 				}
